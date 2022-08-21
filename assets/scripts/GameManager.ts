@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, Collider2D, Contact2DType, IPhysics2DContact } from 'cc';
+import { _decorator, Component, Node, Collider2D, Contact2DType, IPhysics2DContact, Label } from 'cc';
 import { Background } from './Background';
 import { PipeArray } from './PipeArray';
 import { PlayerController } from './PlayerController';
@@ -20,8 +20,8 @@ export class GameManager extends Component {
     @property({ type: PlayerController })
     public playerCtrl: PlayerController | null = null;
 
-    @property({ type: Node })
-    public score: Node | null = null;
+    @property({ type: Label })
+    public scoreLabel: Label | null = null;
 
     @property({ type: PipeArray })
     public pipe: PipeArray | null = null;
@@ -29,31 +29,57 @@ export class GameManager extends Component {
     @property({ type: Background })
     public background: Background = null;
 
+    private scoreNumber: number = 0;
+    private flag = false;
 
     onStartButtonClick() {
         this._curState = GAME_STATE.GS_PLAYING;
     }
 
     start() {
-        let colider = this.playerCtrl.node.getComponent(Collider2D);
-        if (colider) {
-            colider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        let collider = this.playerCtrl.node.getComponent(Collider2D);
+        if (collider) {
+            collider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+            collider.on(Contact2DType.END_CONTACT, this.onEndContact, this);
+            collider.on(Contact2DType.POST_SOLVE, this.postContact, this);
         }
         this._curState = GAME_STATE.GS_INIT;
     }
+    postContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+        console.log("post contact")
+    }
+    onEndContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+        if (this.flag && otherCollider.node.name == "middle") {
+            this.getPoints();
+        }
+    }
 
     onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
+
         if (otherCollider.node.name == "SKY") {
             return;
+        } else if (otherCollider.node.name == "middle") {
+            this.flag = true;
         } else {
+            this.flag = false;
+            console.log("game over")
             this.gameOver();
         }
     }
 
+    getPoints() {
+        this.scoreNumber++;
+        this.scoreLabel.string = this.scoreNumber + "";
+    }
+    resetPoints() {
+        this.scoreNumber = 0;
+        this.scoreLabel.string = this.scoreNumber + "";
+    }
 
     gameOver() {
         this.onStopButtonClicked();
     }
+
 
 
     init() {
@@ -83,6 +109,7 @@ export class GameManager extends Component {
                 this.pipe.moveStop();
                 break;
             case GAME_STATE.GS_PLAYING:
+                this.resetPoints();
                 if (this.startMenu) {
                     this.startMenu.active = false;
                 }

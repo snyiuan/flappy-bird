@@ -120,6 +120,7 @@ export class PipeArray extends Component {
             let position = this.pipe2.children[0].getPosition();
             this.pipe3.children[0].setPosition(position.x, this.pipe3.children[0].getPosition().y)
             this.pipe3.children[1].setPosition(position.x, this.pipe3.children[1].getPosition().y)
+            this.pipe3.children[2].setPosition(position.x, this.pipe3.children[2].getPosition().y)
         }
 
     }
