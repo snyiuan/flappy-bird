@@ -1,4 +1,4 @@
-import { _decorator, Component, Node, input, Input, EventTouch, RigidBody2D, Vec3, IPhysics2DContact, Collider2D, Contact2DType, PhysicsSystem2D } from 'cc';
+import { _decorator, Component, Node, input, Input, EventTouch, RigidBody2D, Vec3, IPhysics2DContact, Collider2D, Contact2DType, PhysicsSystem2D, Vec2 } from 'cc';
 const { ccclass, property } = _decorator;
 
 @ccclass('PlayerController')
@@ -7,32 +7,26 @@ export class PlayerController extends Component {
     private initPosition: Vec3 | null = null;
 
     start() {
-        let colider = this.getComponent(Collider2D);
-        if (colider) {
-            colider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-        }
+        // let colider = this.getComponent(Collider2D);
+        // if (colider) {
+        //     colider.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        // }
 
-        // 注册全局碰撞回调函数
-        if (PhysicsSystem2D.instance) {
-            PhysicsSystem2D.instance.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
-            // PhysicsSystem2D.instance.on(Contact2DType.END_CONTACT, this.onEndContact, this);
-            // PhysicsSystem2D.instance.on(Contact2DType.PRE_SOLVE, this.onPreSolve, this);
-            // PhysicsSystem2D.instance.on(Contact2DType.POST_SOLVE, this.onPostSolve, this);
-        }
+        // // 注册全局碰撞回调函数
+        // if (PhysicsSystem2D.instance) {
+        //     PhysicsSystem2D.instance.on(Contact2DType.BEGIN_CONTACT, this.onBeginContact, this);
+        //     // PhysicsSystem2D.instance.on(Contact2DType.END_CONTACT, this.onEndContact, this);
+        //     // PhysicsSystem2D.instance.on(Contact2DType.PRE_SOLVE, this.onPreSolve, this);
+        //     // PhysicsSystem2D.instance.on(Contact2DType.POST_SOLVE, this.onPostSolve, this);
+        // }
     }
 
 
-    onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
-        if (otherCollider.node.name == "SKY") {
-            return;
-        }
-        console.log(" on begin contact");
-        console.log("self", selfCollider);
-        console.log("other", otherCollider);
-    }
+
 
     reset() {
         if (this.initPosition) {
+            this.node.getComponent(RigidBody2D).linearVelocity = new Vec2(0, 0);
             this.node.setWorldPosition(this.initPosition);
             this.node.getComponent(RigidBody2D).sleep();
             console.log("sleep");

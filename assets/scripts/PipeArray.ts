@@ -1,8 +1,9 @@
 import { _decorator, Component, Node, UITransform, Vec3, RigidBody2D, director, RigidBody, Collider2D, Contact2DType, BoxCollider2D } from 'cc';
+import { PipeCP } from './PipeCP';
 const { ccclass, property } = _decorator;
 
-@ccclass('Pipe')
-export class Pipe extends Component {
+@ccclass('PipeArray')
+export class PipeArray extends Component {
     @property({ type: Node })
     private pipe0: Node | null = null;
     @property({ type: Node })
@@ -11,7 +12,16 @@ export class Pipe extends Component {
     private pipe2: Node | null = null;
     @property({ type: Node })
     private pipe3: Node | null = null;
-    
+
+    @property({ type: PipeCP })
+    private pipe00: PipeCP | null = null
+    @property({ type: PipeCP })
+    private pipe01: PipeCP | null = null
+    @property({ type: PipeCP })
+    private pipe02: PipeCP | null = null
+    @property({ type: PipeCP })
+    private pipe03: PipeCP | null = null
+
     @property
     private gap: number = 100;
     //each pipe couple x space 150
@@ -28,47 +38,49 @@ export class Pipe extends Component {
     public width: number = 288;
 
     start() {
-        let collider = this.node.children[0].children[0].getComponent(BoxCollider2D);
-        let collider2 = this.node.children[0].children[0].getComponent(Collider2D);
-        if (collider) {
-            collider.on(Contact2DType.BEGIN_CONTACT, this.pipeOnBeginContact, this);
-        }
+        console.log("Array start")
+    }
+    onLoad() {
+        console.log("Array onload")
     }
 
-    pipeOnBeginContact() {
-        console.log("pipeOnbeginContact");
-    }
-
-
-    onEnable() {
-        // console.log("onenable..........")
-    }
+    onEnable() { }
     onDestroy() { }
     onDisable() { }
 
 
     pipeStart() {
-        this.node.active = true;
+        if (!this.node.active) {
+            this.node.active = true;
+        }
         this.init();
     }
 
     moveStop() {
-        this.node.active = false;
+        setTimeout(() => {
+            this.node.active = false;
+        }, 0.1);
     }
 
     init() {
         this.node.setPosition(0, 0);
-        
-        console.log("init width", this.width)
-        this.pipe0.setPosition(this.width, this.random(this.minH, this.maxH))
-        this.pipe1.setPosition(this.width + this.space, this.random(this.minH, this.maxH))
-        this.pipe2.setPosition(this.width + 2 * this.space, this.random(this.minH, this.maxH))
-        this.pipe3.setPosition(this.width + 3 * this.space, this.random(this.minH, this.maxH))
+        this.pipe00.setChildrenPosition(this.width, this.random(this.minH, this.maxH))
+        this.pipe01.setChildrenPosition(this.width + this.space, this.random(this.minH, this.maxH))
+        this.pipe02.setChildrenPosition(this.width + 2 * this.space, this.random(this.minH, this.maxH))
+        this.pipe03.setChildrenPosition(this.width + 3 * this.space, this.random(this.minH, this.maxH))
+        /*  this.pipe0.setPosition(this.width, this.random(this.minH, this.maxH))
+            this.pipe1.setPosition(this.width + this.space, this.random(this.minH, this.maxH))
+            this.pipe2.setPosition(this.width + 2 * this.space, this.random(this.minH, this.maxH))
+            this.pipe3.setPosition(this.width + 3 * this.space, this.random(this.minH, this.maxH)) */
+
     }
 
     random(min: number, max: number) {
         return Math.random() * (max - min) + min;
     }
+
+
+
     update(deltaTime: number) {
         /* let position = this.node.getWorldPosition();
         position.x -= deltaTime * this.speed;
@@ -109,11 +121,6 @@ export class Pipe extends Component {
             this.pipe3.children[0].setPosition(position.x, this.pipe3.children[0].getPosition().y)
             this.pipe3.children[1].setPosition(position.x, this.pipe3.children[1].getPosition().y)
         }
-
-
-
-
-
 
     }
 }
