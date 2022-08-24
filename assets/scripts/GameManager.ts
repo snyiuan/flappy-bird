@@ -55,7 +55,7 @@ export class GameManager extends Component {
     }
 
     onBeginContact(selfCollider: Collider2D, otherCollider: Collider2D, contact: IPhysics2DContact | null) {
-
+        
         if (otherCollider.node.name == "SKY") {
             return;
         } else if (otherCollider.node.name == "middle") {
